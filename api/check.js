@@ -37,16 +37,16 @@ module.exports = async (req, res) => {
 
     const captured = {};
 
-    // ❌ KEYCHECK Failure
+    
     if (JSON.stringify(data).trim() === "{}") {
       return res.json({ result: "bad", captured });
     }
 
-    // ✅ KEYCHECK Success
+    
     if (data.currentCourse && cookieStr.includes("jwt_token")) {
       captured["İsim"] = data.username || null;
 
-      // Plan type
+      
       const productId =
         data?.shopItems?.[0]?.subscriptionInfo?.productId;
       captured["Plan type"] = translatePlan(productId);
@@ -66,7 +66,7 @@ module.exports = async (req, res) => {
         data?.shopItems?.[0]?.subscriptionInfo?.tier;
       if (tier === "one_month") captured["Period of Plan"] = "1 month";
 
-      // 🍪 wuuid cookie
+      
       const wuuidCookie = cookies.find((c) =>
         c.startsWith("wuuid=")
       );
@@ -80,7 +80,7 @@ module.exports = async (req, res) => {
       });
     }
 
-    // 🆓 FREE (custom)
+    
     const typeVal =
       data?.shopItems?.[0]?.subscriptionInfo?.type;
     if (typeVal && !typeVal.includes("premium")) {
@@ -98,9 +98,7 @@ module.exports = async (req, res) => {
   }
 };
 
-// ==============================
-// Plan çevirici
-// ==============================
+
 function translatePlan(productId) {
   switch (productId) {
     case "com.duolingo.DuolingoMobile.subscription.Premium.TwelveMonth.24":
@@ -114,3 +112,4 @@ function translatePlan(productId) {
       return productId || null;
   }
 }
+
